@@ -6,10 +6,11 @@
 
 //
 //  Ideas for features and optimization
-//
+
 //  IDEA 1
-//  Preprocess all the boids and store the distances
+//  Preprocess all the boids and store the distances in a matrix
 //  -> this reduces the number of calculations
+//  -> give each boid an id to easily find itself in the matrix
 
 //  IDEA 2
 //  do all calculations in one loop, reduce duplication
@@ -35,10 +36,13 @@ var Boid = Base.extend({
     this.desiredseparation = 25.0; // Desired separation between boids - original 25.0
     this.alignmentneighbordist = 100; // Distance to follow average velocity - original 50
     this.cohesionneighbordist = 100; // Distance to steer to 'center of gravity' - original 50
-    this.separationweight = 1.5;
-    this.alignmentweight = 1.0;
-    this.cohesionweight = 1.0;
+    this.separationweight = 1.5; // weight of the separation vector
+    this.alignmentweight = 1.0; // weight of the alignment vector
+    this.cohesionweight = 1.0; // weight of the cohesion vector
 
+    //
+    //  draw base boid arrow
+    //
     var arrowLength = 8;
     var arrowSideLength = 8;
 
@@ -155,7 +159,7 @@ var Boid = Base.extend({
         diff = diff.normalize();
         diff = diff.divide(d); // Weight by distance
         steer = steer.add(diff);
-        count++; // Keep track of how many
+        count++; // Keep track of how many are too close
       }
     }
     // Average -- divide by how many
