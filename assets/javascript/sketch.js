@@ -45,4 +45,3 @@ function addOnloadListener(func) {
 }
 
 addOnloadListener(startPaper);
-console.log('wait…');
