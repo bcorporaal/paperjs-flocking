@@ -11,11 +11,17 @@
 //  Preprocess all the boids and store the distances
 //  -> this reduces the number of calculations
 
-//  IDEE 2
+//  IDEA 2
 //  do all calculations in one loop, reduce duplication
 
-//  IDEE 3
+//  IDEA 3
 //  use a quadtree or similar to find the nearest neighbour
+
+//  IDEA 4
+//  let the boids react to the mouse cursor
+
+//  IDEA 5
+//  give the boids a limited field of view
 
 var Boid = Base.extend({
   initialize: function(x, y) {
@@ -72,7 +78,8 @@ var Boid = Base.extend({
     var ali = this.alignment(boids); // Alignment
     var coh = this.cohesion(boids); // Cohesion
 
-    // Arbitrarily weight these forces
+    //  Arbitrarily weight these forces
+    //  OPTIMIZE: do this multiplication together with other multiplications on this vector
     sep = sep.multiply(this.separationweight);
     ali = ali.multiply(this.alignmentweight);
     coh = coh.multiply(this.cohesionweight);
