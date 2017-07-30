@@ -1,3 +1,9 @@
+//  Flocking system
+//  Based on chapter 6 of Nature of Code by Daniel Shiffman
+//  http://natureofcode.com/book/chapter-6-autonomous-agents/
+//
+//  Rewritten for PaperJS and optimized by Bob Corporaal - https://reefscape.net
+
 function startPaper() {
   paper.setup('canvas');
 
