@@ -18,7 +18,7 @@
 //  IDEA 3
 //  use a quadtree or similar to find the nearest neighbour
 
-//  IDEA 4
+//  IDEA 4 - DONE
 //  let the boids react to the mouse cursor
 
 //  IDEA 5
@@ -26,6 +26,9 @@
 
 //  IDEA 6
 //  show the different vectors on one of the boids
+
+//  IDEA 7
+//  add wander behavior if boid is not close to anybody else
 
 var Boid = Base.extend({
   initialize: function(x, y) {
