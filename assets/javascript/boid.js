@@ -198,7 +198,7 @@ var Boid = Base.extend({
     var sum = new Point(0, 0);
     var count = 0;
     var n = boids.length;
-    for (var i = 0; i < boids.length; i++) {
+    for (var i = 0; i < n; i++) {
       // OPTIMIZE: no need to calculate this twice!
       var d = this.position.getDistance(boids[i].position);
       if ((d > 0) && (d < this.alignmentneighbordist)) {
