@@ -6,16 +6,29 @@
 
 //
 //  Ideas for features and optimization
-//
-//  IDEA 1
-//  Preprocess all the boids and store the distances
-//  -> this reduces the number of calculations
 
-//  IDEE 2
+//  IDEA 1
+//  Preprocess all the boids and store the distances in a matrix
+//  -> this reduces the number of calculations
+//  -> give each boid an id to easily find itself in the matrix
+
+//  IDEA 2
 //  do all calculations in one loop, reduce duplication
 
-//  IDEE 3
+//  IDEA 3
 //  use a quadtree or similar to find the nearest neighbour
+
+//  IDEA 4 - DONE
+//  let the boids react to the mouse cursor
+
+//  IDEA 5
+//  give the boids a limited field of view
+
+//  IDEA 6
+//  show the different vectors on one of the boids
+
+//  IDEA 7
+//  add wander behavior if boid is not close to anybody else
 
 var Boid = Base.extend({
   initialize: function(x, y) {
@@ -29,10 +42,15 @@ var Boid = Base.extend({
     this.desiredseparation = 25.0; // Desired separation between boids - original 25.0
     this.alignmentneighbordist = 100; // Distance to follow average velocity - original 50
     this.cohesionneighbordist = 100; // Distance to steer to 'center of gravity' - original 50
-    this.separationweight = 1.5;
-    this.alignmentweight = 1.0;
-    this.cohesionweight = 1.0;
+    this.separationweight = 1.5; // weight of the separation vector
+    this.alignmentweight = 1.0; // weight of the alignment vector
+    this.cohesionweight = 1.0; // weight of the cohesion vector
+    this.avoidweight = 0.2; // weight of the avoid vector
+    this.avoidDistance = 100; // distance to stay away from the mouse
 
+    //
+    //  draw base boid arrow
+    //
     var arrowLength = 8;
     var arrowSideLength = 8;
 
@@ -50,12 +68,12 @@ var Boid = Base.extend({
     ]);
 
     this.arrow.strokeWidth = 1;
-    this.arrow.strokeColor = 'black';
+    this.arrow.strokeColor = '#1C1A20';
     this.arrow.applyMatrix = false;
   },
 
-  run: function(boids) {
-    this.flock(boids);
+  run: function(boids, currentMousePos) {
+    this.flock(boids, currentMousePos);
     this.update();
     this.borders();
     this.render();
@@ -66,22 +84,26 @@ var Boid = Base.extend({
     this.acceleration = this.acceleration.add(force);
   },
 
-  flock: function(boids) {
+  flock: function(boids, currentMousePos) {
 
     var sep = this.separate(boids); // Separation
     var ali = this.alignment(boids); // Alignment
     var coh = this.cohesion(boids); // Cohesion
+    var avo = this.avoid(currentMousePos); // Avoid
 
-    // Arbitrarily weight these forces
+    //  Arbitrarily weight these forces
+    //  OPTIMIZE: do this multiplication together with other multiplications on this vector
     sep = sep.multiply(this.separationweight);
     ali = ali.multiply(this.alignmentweight);
     coh = coh.multiply(this.cohesionweight);
+    avo = avo.multiply(this.avoidweight);
 
     // Add the force vectors to acceleration
     // OPTIMIZE: there is no need for a separate function for this
     this.applyForce(sep);
     this.applyForce(ali);
     this.applyForce(coh);
+    this.applyForce(avo);
   },
 
   update: function() {
@@ -148,7 +170,7 @@ var Boid = Base.extend({
         diff = diff.normalize();
         diff = diff.divide(d); // Weight by distance
         steer = steer.add(diff);
-        count++; // Keep track of how many
+        count++; // Keep track of how many are too close
       }
     }
     // Average -- divide by how many
@@ -222,5 +244,24 @@ var Boid = Base.extend({
       return new Point();
     }
 
+  },
+
+  //  Avoid
+  //  Stay away from the current mouse position
+  avoid: function(currentMousePos) {
+    var ap = currentMousePos.subtract(this.position);
+
+    if (ap.length < this.avoidDistance) {
+      var ab = this.position.add(this.velocity);
+
+      ab = ab.normalize();
+      ab = ab.multiply(ap.dot(ab));
+
+      var avoidVector = ab.subtract(ap);
+
+      return avoidVector.normalize();
+    } else {
+      return new Point(0, 0);
+    }
   }
 });
