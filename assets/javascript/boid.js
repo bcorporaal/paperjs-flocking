@@ -45,7 +45,7 @@ var Boid = Base.extend({
     this.separationweight = 1.5; // weight of the separation vector
     this.alignmentweight = 1.0; // weight of the alignment vector
     this.cohesionweight = 1.0; // weight of the cohesion vector
-    this.avoidweight = 0.2; // weight of the avoid vector
+    this.avoidweight = 0.1; // weight of the avoid vector
     this.avoidDistance = 100; // distance to stay away from the mouse
 
     //
@@ -250,14 +250,17 @@ var Boid = Base.extend({
   //  Stay away from the current mouse position
   avoid: function(currentMousePos) {
     var ap = currentMousePos.subtract(this.position);
+    var apLength = ap.length;
 
-    if (ap.length < this.avoidDistance) {
+
+    // OPTIMIZE: make strength of avoidVector correlate to distance from mouse
+    if (apLength < this.avoidDistance) {
       var ab = this.position.add(this.velocity);
 
       ab = ab.normalize();
       ab = ab.multiply(ap.dot(ab));
 
-      var avoidVector = ab.subtract(ap);
+      var avoidVector = ab.subtract(ap).multiply(1-(apLength/this.avoidDistance));
 
       return avoidVector.normalize();
     } else {
