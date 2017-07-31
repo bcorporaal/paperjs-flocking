@@ -68,7 +68,7 @@ var Boid = Base.extend({
     ]);
 
     this.arrow.strokeWidth = 1;
-    this.arrow.strokeColor = 'black';
+    this.arrow.strokeColor = '#1C1A20';
     this.arrow.applyMatrix = false;
   },
 
