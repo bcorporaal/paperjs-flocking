@@ -39,6 +39,8 @@ var Boid = Base.extend({
     this.separationweight = 1.5; // weight of the separation vector
     this.alignmentweight = 1.0; // weight of the alignment vector
     this.cohesionweight = 1.0; // weight of the cohesion vector
+    this.avoidweight = 0.004; // weight of the avoid vector
+    this.avoidDistance = 100; // distance to stay away from the mouse
 
     //
     //  draw base boid arrow
@@ -64,8 +66,8 @@ var Boid = Base.extend({
     this.arrow.applyMatrix = false;
   },
 
-  run: function(boids) {
-    this.flock(boids);
+  run: function(boids, currentMousePos) {
+    this.flock(boids, currentMousePos);
     this.update();
     this.borders();
     this.render();
@@ -76,23 +78,26 @@ var Boid = Base.extend({
     this.acceleration = this.acceleration.add(force);
   },
 
-  flock: function(boids) {
+  flock: function(boids, currentMousePos) {
 
     var sep = this.separate(boids); // Separation
     var ali = this.alignment(boids); // Alignment
     var coh = this.cohesion(boids); // Cohesion
+    var avo = this.avoid(currentMousePos); // Avoid
 
     //  Arbitrarily weight these forces
     //  OPTIMIZE: do this multiplication together with other multiplications on this vector
     sep = sep.multiply(this.separationweight);
     ali = ali.multiply(this.alignmentweight);
     coh = coh.multiply(this.cohesionweight);
+    avo = avo.multiply(this.avoidweight);
 
     // Add the force vectors to acceleration
     // OPTIMIZE: there is no need for a separate function for this
     this.applyForce(sep);
     this.applyForce(ali);
     this.applyForce(coh);
+    this.applyForce(avo);
   },
 
   update: function() {
@@ -233,5 +238,18 @@ var Boid = Base.extend({
       return new Point();
     }
 
+  },
+
+  //  Avoid
+  //  Stay away from the current mouse position
+  avoid: function(currentMousePos) {
+    var avoidVector = this.position.subtract(currentMousePos);
+
+    if (avoidVector.length < this.avoidDistance) {
+      //avoidVector.normalize();
+      return avoidVector;
+    } else {
+      return new Point(0,0);
+    }
   }
 });
