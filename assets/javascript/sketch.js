@@ -27,9 +27,9 @@ function startPaper() {
     flock.run();
   }
 
-  // view.onMouseMove = function(event) {
-  //   mousePos = event.point;
-  // }
+  view.onMouseMove = function(event) {
+    flock.updateMouse(event.point);
+  }
 
 }
 
