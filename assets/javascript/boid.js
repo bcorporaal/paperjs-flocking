@@ -24,6 +24,9 @@
 //  IDEA 5
 //  give the boids a limited field of view
 
+//  IDEA 6
+//  show the different vectors on one of the boids
+
 var Boid = Base.extend({
   initialize: function(x, y) {
     this.position = new Point(x, y);
@@ -39,7 +42,7 @@ var Boid = Base.extend({
     this.separationweight = 1.5; // weight of the separation vector
     this.alignmentweight = 1.0; // weight of the alignment vector
     this.cohesionweight = 1.0; // weight of the cohesion vector
-    this.avoidweight = 0.004; // weight of the avoid vector
+    this.avoidweight = 0.2; // weight of the avoid vector
     this.avoidDistance = 100; // distance to stay away from the mouse
 
     //
@@ -243,13 +246,19 @@ var Boid = Base.extend({
   //  Avoid
   //  Stay away from the current mouse position
   avoid: function(currentMousePos) {
-    var avoidVector = this.position.subtract(currentMousePos);
+    var ap = currentMousePos.subtract(this.position);
 
-    if (avoidVector.length < this.avoidDistance) {
-      //avoidVector.normalize();
-      return avoidVector;
+    if (ap.length < this.avoidDistance) {
+      var ab = this.position.add(this.velocity);
+
+      ab = ab.normalize();
+      ab = ab.multiply(ap.dot(ab));
+
+      var avoidVector = ab.subtract(ap);
+
+      return avoidVector.normalize();
     } else {
-      return new Point(0,0);
+      return new Point(0, 0);
     }
   }
 });
