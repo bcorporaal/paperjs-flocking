@@ -30,6 +30,10 @@
 //  IDEA 7
 //  add wander behavior if boid is not close to anybody else
 
+//  INSPIRATION FOR OPTIMIZATION
+//  https://github.com/hughsk/boids
+//  https://github.com/jrhdoty/SwarmJS
+
 var Boid = Base.extend({
   initialize: function(x, y) {
     this.position = new Point(x, y);
