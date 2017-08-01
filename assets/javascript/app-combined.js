@@ -1,8 +1,6 @@
 paper.install(window);
 
 
-
-
 //  Flocking system
 //  Based on chapter 6 of Nature of Code by Daniel Shiffman
 //  http://natureofcode.com/book/chapter-6-autonomous-agents/

@@ -1,3 +1,1 @@
 paper.install(window);
-
-
