@@ -88,8 +88,8 @@ let Boid = Base.extend({
     //
     //  draw base boid arrow
     //
-    const arrowLength = 8;
-    const arrowSideLength = 8;
+    const arrowLength = 6;
+    const arrowSideLength = 6;
 
     let arrowSide = new Point(arrowSideLength, 0);
     let arrowStart = new Point(0, 0);
