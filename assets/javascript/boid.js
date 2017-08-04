@@ -43,7 +43,7 @@ var Boid = Base.extend({
     var fnoise = 0.35;
 
     // wraparound distance - original 3.0
-    this.r = 3.0;
+    this.r = 10;
 
     // Maximum speed - original 3
     this.maxspeed = this.addNoise(3,fnoise);

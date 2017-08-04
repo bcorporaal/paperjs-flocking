@@ -46,7 +46,7 @@ var Boid = Base.extend({
     var fnoise = 0.35;
 
     // wraparound distance - original 3.0
-    this.r = 3.0;
+    this.r = 10;
 
     // Maximum speed - original 3
     this.maxspeed = this.addNoise(3,fnoise);
@@ -349,7 +349,6 @@ var Flock = Base.extend({
 
 function startPaper() {
   paper.setup('canvas');
-  console.log('hello there!')
   var nrBoids = 60;
 
   // Create a new flock
@@ -361,43 +360,19 @@ function startPaper() {
     //
     //  get a random point on the perimiter
     //
-    let w = view.viewSize.width;
-    let h = view.viewSize.height;
-    let l = Math.random()*(2*w+2*h);
+    let frame = 5; // off screen margin for the boids
+    let w = view.viewSize.width+2*frame;
+    let h = view.viewSize.height+2*frame;
     let x = 0;
     let y = 0;
-
-    // if (l < w) {
-    //   x = l;
-    //   y = 0;
-    //   console.log('top');
-    // } else if (l < (w+h)) {
-    //   x = w;
-    //   y = l - w;
-    //   console.log('right');
-    // } else if (l < (2*w+h)) {
-    //   x = l - (w+h);
-    //   y = h;
-    //   console.log('bottom');
-    // } else {
-    //   x = 0;
-    //   y = l - (2*w+h);
-    //   console.log('left');
-    // }
-
 
     //
     //  get random point on the perimiter
     //  taken from https://stackoverflow.com/questions/9005750/generate-a-random-point-on-a-rectangles-perimeter-with-uniform-distribution
     //
-    //
     let r = Math.random();
-    x = w*Math.min(1, Math.max(0, Math.abs((r * 4 - .5) % 4 - 2) - .5));
-    y = h*Math.min(1, Math.max(0, Math.abs((r * 4 + .5) % 4 - 2) - .5));
-
-    //console.log(x,y);
-    //var x = xr*view.viewSize.width;
-    //var y = yr*view.viewSize.height;
+    x = w*Math.min(1, Math.max(0, Math.abs((r * 4 - .5) % 4 - 2) - .5))-frame;
+    y = h*Math.min(1, Math.max(0, Math.abs((r * 4 + .5) % 4 - 2) - .5))-frame;
     var b = new Boid(x,y);
     flock.addBoid(b);
   }
