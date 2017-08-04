@@ -43,17 +43,17 @@ var Boid = Base.extend({
     this.acceleration = new Point(0, 0);
     this.velocity = new Point(Math.random() * 2 - 1, Math.random() * 2 - 1);
 
-    this.r = 3.0; // wraparound distance
+    this.r = 3.0; // wraparound distance - original
     this.maxspeed = 3; // Maximum speed - original 3
-    this.maxforce = 0.05; // Maximum steering force - original 0.05
+    this.maxforce = 0.1; // Maximum steering force - original 0.05
     this.desiredseparation = 25.0; // Desired separation between boids - original 25.0
-    this.alignmentneighbordist = 100; // Distance to follow average velocity - original 50
-    this.cohesionneighbordist = 100; // Distance to steer to 'center of gravity' - original 50
-    this.separationweight = 1.5; // weight of the separation vector
-    this.alignmentweight = 1.0; // weight of the alignment vector
-    this.cohesionweight = 1.0; // weight of the cohesion vector
-    this.avoidweight = 0.1; // weight of the avoid vector
-    this.avoidDistance = 100; // distance to stay away from the mouse
+    this.alignmentneighbordist = 50; // Distance to follow average velocity - original 50
+    this.cohesionneighbordist = 200; // Distance to steer to 'center of gravity' - original 50
+    this.separationweight = 1.5; // weight of the separation vector - original 1.5
+    this.alignmentweight = 1.0; // weight of the alignment vector - original 1.0
+    this.cohesionweight = 1.2; // weight of the cohesion vector - original 1.0
+    this.avoidweight = 0.1; // weight of the avoid vector - original 1.0
+    this.avoidDistance = 100; // distance to stay away from the mouse - original 100
 
     //
     //  draw base boid arrow
