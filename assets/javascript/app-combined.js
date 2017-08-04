@@ -52,14 +52,14 @@ let Boid = Base.extend({
     this.r = 10;
 
     // Maximum speed - original 3
-    this.maxspeed = this.addNoise(3,fnoise);
+    this.maxspeed = this.addNoise(1.6,fnoise);
 
     //  Give a random starting velocity based on maxspeed
     const startVelocity = 0.25;
     this.velocity = new Point(startVelocity*this.maxspeed*(1-2*Math.random()), startVelocity*this.maxspeed*(1-2*Math.random()));
 
     // Maximum steering force - original 0.05
-    this.maxforce = this.addNoise(0.1,fnoise);
+    this.maxforce = this.addNoise(0.04,fnoise);
 
     // Desired separation between boids - original 25.0
     this.desiredseparation = 25.0; // not random to ensure boids keep some distance
@@ -71,7 +71,7 @@ let Boid = Base.extend({
     this.cohesionneighbordist = this.addNoise(200,fnoise);
 
     // weight of the separation vector - original 1.5
-    this.separationweight = 2; // not random to ensure boids keep some distance
+    this.separationweight = 2; // not random to ensure boids always keep some distance
 
     // weight of the alignment vector - original 1.0
     this.alignmentweight = this.addNoise(1.0,fnoise);
