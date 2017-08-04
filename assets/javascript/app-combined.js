@@ -37,13 +37,13 @@ paper.install(window);
 //  https://github.com/hughsk/boids
 //  https://github.com/jrhdoty/SwarmJS
 
-var Boid = Base.extend({
+let Boid = Base.extend({
   initialize: function(x, y) {
     this.position = new Point(x, y);
     this.acceleration = new Point(0, 0);
 
     // randomnessfnoise
-    var fnoise = 0.35;
+    let fnoise = 0.35;
 
     // wraparound distance - original 3.0
     this.r = 10;
@@ -88,12 +88,12 @@ var Boid = Base.extend({
     //
     //  draw base boid arrow
     //
-    var arrowLength = 8;
-    var arrowSideLength = 8;
+    let arrowLength = 8;
+    let arrowSideLength = 8;
 
-    var arrowSide = new Point(arrowSideLength, 0);
-    var arrowStart = new Point(0, 0);
-    var arrowEnd = arrowStart.subtract(new Point(arrowLength, 0));
+    let arrowSide = new Point(arrowSideLength, 0);
+    let arrowStart = new Point(0, 0);
+    let arrowEnd = arrowStart.subtract(new Point(arrowLength, 0));
 
     this.arrow = new Group([
       new Path([arrowEnd, arrowStart]),
@@ -126,10 +126,10 @@ var Boid = Base.extend({
 
   flock: function(boids, currentMousePos) {
 
-    var sep = this.separate(boids); // Separation
-    var ali = this.alignment(boids); // Alignment
-    var coh = this.cohesion(boids); // Cohesion
-    var avo = this.avoid(currentMousePos); // Avoid
+    let sep = this.separate(boids); // Separation
+    let ali = this.alignment(boids); // Alignment
+    let coh = this.cohesion(boids); // Cohesion
+    let avo = this.avoid(currentMousePos); // Avoid
 
     //  Arbitrarily weight these forces
     //  OPTIMIZE: do this multiplication together with other multiplications on this vector
@@ -164,12 +164,12 @@ var Boid = Base.extend({
 
   seek: function(target) {
     // A vector pointing from the location to the target
-    var desired = target.subtract(this.position);
+    let desired = target.subtract(this.position);
 
     // Normalize desired and scale to maximum speed
     desired = desired.normalize(this.maxspeed);
 
-    var steer = desired.subtract(this.velocity);
+    let steer = desired.subtract(this.velocity);
 
     if (steer.length > this.maxforce) {
       steer = steer.normalize(this.maxforce);
@@ -179,8 +179,8 @@ var Boid = Base.extend({
   },
 
   borders: function() {
-    var width = view.viewSize.width;
-    var height = view.viewSize.height;
+    let width = view.viewSize.width;
+    let height = view.viewSize.height;
     if (this.position.x < -this.r) this.position.x = width + this.r;
     if (this.position.y < -this.r) this.position.y = height + this.r;
     if (this.position.x > (width + this.r)) this.position.x = -this.r;
@@ -196,17 +196,17 @@ var Boid = Base.extend({
   // Method checks for nearby boids and steers away
   separate: function(boids) {
 
-    var steer = new Point(0, 0);
-    var count = 0;
+    let steer = new Point(0, 0);
+    let count = 0;
     // For every boid in the system, check if it's too close
-    var n = boids.length;
-    for (var i = 0; i < n; i++) {
+    let n = boids.length;
+    for (let i = 0; i < n; i++) {
 
-      var d = this.position.getDistance(boids[i].position);
+      let d = this.position.getDistance(boids[i].position);
       // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
       if ((d > 0) && (d < this.desiredseparation)) {
         // Calculate vector pointing away from neighbor
-        var diff = this.position.subtract(boids[i].position);
+        let diff = this.position.subtract(boids[i].position);
         diff = diff.normalize();
         diff = diff.divide(d); // Weight by distance
         steer = steer.add(diff);
@@ -235,12 +235,12 @@ var Boid = Base.extend({
   // For every nearby boid in the system, calculate the average velocity
   alignment: function(boids) {
 
-    var sum = new Point(0, 0);
-    var count = 0;
-    var n = boids.length;
-    for (var i = 0; i < n; i++) {
+    let sum = new Point(0, 0);
+    let count = 0;
+    let n = boids.length;
+    for (let i = 0; i < n; i++) {
       // OPTIMIZE: no need to calculate this twice!
-      var d = this.position.getDistance(boids[i].position);
+      let d = this.position.getDistance(boids[i].position);
       if ((d > 0) && (d < this.alignmentneighbordist)) {
         sum = sum.add(boids[i].velocity);
         count++;
@@ -251,7 +251,7 @@ var Boid = Base.extend({
       // OPTIMIZE: this code is repeated in other places
       sum = sum.divide(count);
       sum = sum.normalize(this.maxspeed);
-      var steer = sum.subtract(this.velocity);
+      let steer = sum.subtract(this.velocity);
       if (steer.length > this.maxforce) {
         steer = steer.normalize(this.maxforce);
       }
@@ -265,12 +265,12 @@ var Boid = Base.extend({
   // For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location
   cohesion: function(boids) {
 
-    var sum = new Point(0, 0); // Start with empty vector to accumulate all locations
-    var count = 0;
-    var n = boids.length;
+    let sum = new Point(0, 0); // Start with empty vector to accumulate all locations
+    let count = 0;
+    let n = boids.length;
 
-    for (var i = 0; i < n; i++) {
-      var d = this.position.getDistance(boids[i].position);
+    for (let i = 0; i < n; i++) {
+      let d = this.position.getDistance(boids[i].position);
       if ((d > 0) && (d < this.cohesionneighbordist)) {
         sum = sum.add(boids[i].position); // Add location
         count++;
@@ -289,18 +289,18 @@ var Boid = Base.extend({
   //  Avoid
   //  Stay away from the current mouse position
   avoid: function(currentMousePos) {
-    var ap = currentMousePos.subtract(this.position);
-    var apLength = ap.length;
+    let ap = currentMousePos.subtract(this.position);
+    let apLength = ap.length;
 
 
     // OPTIMIZE: make strength of avoidVector correlate to distance from mouse
     if (apLength < this.avoidDistance) {
-      var ab = this.position.add(this.velocity);
+      let ab = this.position.add(this.velocity);
 
       ab = ab.normalize();
       ab = ab.multiply(ap.dot(ab));
 
-      var avoidVector = ab.subtract(ap).multiply(1-(apLength/this.avoidDistance));
+      let avoidVector = ab.subtract(ap).multiply(1-(apLength/this.avoidDistance));
 
       return avoidVector.normalize();
     } else {
@@ -317,7 +317,7 @@ var Boid = Base.extend({
 //  Rewritten for PaperJS and optimized by Bob Corporaal - https://reefscape.net
 
 
-var Flock = Base.extend({
+let Flock = Base.extend({
   initialize: function() {
     this.boids = []; // Initialize array to hold the boids
     this.l = 0; // Track the number of boids
@@ -330,7 +330,7 @@ var Flock = Base.extend({
   },
 
   run: function() {
-    for (var i = 0; i < this.l; i++) {
+    for (let i = 0; i < this.l; i++) {
       this.boids[i].run(this.boids, this.currentMousePos);  // Passing the entire list of boids to each boid individually
     }
   },
@@ -349,13 +349,13 @@ var Flock = Base.extend({
 
 function startPaper() {
   paper.setup('canvas');
-  var nrBoids = 60;
+  let nrBoids = 60;
 
   // Create a new flock
   flock = new Flock();
 
   // Add an initial set of boids into the system
-  for (var i = 0; i < nrBoids; i++) {
+  for (let i = 0; i < nrBoids; i++) {
 
     //
     //  get a random point on the perimiter
@@ -373,7 +373,7 @@ function startPaper() {
     let r = Math.random();
     x = w*Math.min(1, Math.max(0, Math.abs((r * 4 - .5) % 4 - 2) - .5))-frame;
     y = h*Math.min(1, Math.max(0, Math.abs((r * 4 + .5) % 4 - 2) - .5))-frame;
-    var b = new Boid(x,y);
+    let b = new Boid(x,y);
     flock.addBoid(b);
   }
 
