@@ -49,11 +49,24 @@ var Boid = Base.extend({
     this.desiredseparation = 25.0; // Desired separation between boids - original 25.0
     this.alignmentneighbordist = 50; // Distance to follow average velocity - original 50
     this.cohesionneighbordist = 200; // Distance to steer to 'center of gravity' - original 50
-    this.separationweight = 1.5; // weight of the separation vector - original 1.5
+    this.separationweight = 2; // weight of the separation vector - original 1.5
     this.alignmentweight = 1.0; // weight of the alignment vector - original 1.0
     this.cohesionweight = 1.2; // weight of the cohesion vector - original 1.0
     this.avoidweight = 0.1; // weight of the avoid vector - original 1.0
     this.avoidDistance = 100; // distance to stay away from the mouse - original 100
+
+    var variation = 0.5;
+
+    this.maxspeed *= 1+variation*(1-2*Math.random());
+    this.maxforce *= 1+variation*(1-2*Math.random());
+    //this.desiredseparation *= 1+variation*(1-2*Math.random());
+    this.alignmentneighbordist *= 1+variation*(1-2*Math.random());
+    this.cohesionneighbordist *= 1+variation*(1-2*Math.random());
+    //this.separationweight *= 1+variation*(1-2*Math.random());
+    this.alignmentweight *= 1+variation*(1-2*Math.random());
+    this.cohesionweight *= 1+variation*(1-2*Math.random());
+    this.avoidweight *= 1+variation*(1-2*Math.random());
+    this.avoidDistance *= 1+variation*(1-2*Math.random());
 
     //
     //  draw base boid arrow
@@ -78,6 +91,8 @@ var Boid = Base.extend({
     this.arrow.strokeColor = '#1C1A20';
     this.arrow.applyMatrix = false;
   },
+
+
 
   run: function(boids, currentMousePos) {
     this.flock(boids, currentMousePos);
