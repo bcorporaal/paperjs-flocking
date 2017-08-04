@@ -5,7 +5,7 @@
 //  Rewritten for PaperJS and optimized by Bob Corporaal - https://reefscape.net
 
 
-var Flock = Base.extend({
+let Flock = Base.extend({
   initialize: function() {
     this.boids = []; // Initialize array to hold the boids
     this.l = 0; // Track the number of boids
@@ -18,7 +18,7 @@ var Flock = Base.extend({
   },
 
   run: function() {
-    for (var i = 0; i < this.l; i++) {
+    for (let i = 0; i < this.l; i++) {
       this.boids[i].run(this.boids, this.currentMousePos);  // Passing the entire list of boids to each boid individually
     }
   },
