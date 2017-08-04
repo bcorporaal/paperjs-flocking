@@ -6,7 +6,7 @@
 
 function startPaper() {
   paper.setup('canvas');
-  let nrBoids = 60;
+  const nrBoids = 60;
 
   // Create a new flock
   flock = new Flock();
@@ -17,7 +17,7 @@ function startPaper() {
     //
     //  get a random point on the perimiter
     //
-    let frame = 5; // off screen margin for the boids
+    const frame = 5; // off screen margin for the boids
     let w = view.viewSize.width+2*frame;
     let h = view.viewSize.height+2*frame;
     let x = 0;
