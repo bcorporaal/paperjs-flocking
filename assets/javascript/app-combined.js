@@ -1,3 +1,6 @@
+paper.install(window);
+
+
 //  Flocking system
 //  Based on chapter 6 of Nature of Code by Daniel Shiffman
 //  http://natureofcode.com/book/chapter-6-autonomous-agents/
@@ -300,3 +303,98 @@ var Boid = Base.extend({
     }
   }
 });
+
+
+//  Flocking system
+//  Based on chapter 6 of Nature of Code by Daniel Shiffman
+//  http://natureofcode.com/book/chapter-6-autonomous-agents/
+//
+//  Rewritten for PaperJS and optimized by Bob Corporaal - https://reefscape.net
+
+
+var Flock = Base.extend({
+  initialize: function() {
+    this.boids = []; // Initialize array to hold the boids
+    this.l = 0; // Track the number of boids
+    this.currentMousePos = new Point();
+  },
+
+  addBoid: function(newBoid) {
+    this.l++;
+    this.boids.push(newBoid);
+  },
+
+  run: function() {
+    for (var i = 0; i < this.l; i++) {
+      this.boids[i].run(this.boids, this.currentMousePos);  // Passing the entire list of boids to each boid individually
+    }
+  },
+
+  updateMouse: function(mousePos) {
+    this.currentMousePos = mousePos;
+  }
+});
+
+
+//  Flocking system
+//  Based on chapter 6 of Nature of Code by Daniel Shiffman
+//  http://natureofcode.com/book/chapter-6-autonomous-agents/
+//
+//  Rewritten for PaperJS and optimized by Bob Corporaal - https://reefscape.net
+
+function startPaper() {
+  paper.setup('canvas');
+
+  var nrBoids = 60;
+
+  // Create a new flock
+  flock = new Flock();
+
+  // Add an initial set of boids into the system
+  for (var i = 0; i < nrBoids; i++) {
+    var x = Math.random()*view.viewSize.width;
+    var y = Math.random()*view.viewSize.height;
+    var b = new Boid(x,y);
+    flock.addBoid(b);
+  }
+
+  //
+  //  onFrame
+  //
+  view.onFrame = function(event) {
+    flock.run();
+  }
+
+  view.onMouseMove = function(event) {
+    flock.updateMouse(event.point);
+  }
+
+}
+
+//
+//  make sure things get started at the right time
+//
+function addOnloadListener(func) {
+  if (window.addEventListener)
+    window.addEventListener('load', func, false);
+  else if (window.attachEvent)
+    window.attachEvent('onload', func);
+  else window.onload = chain(window.onload, func);
+}
+
+addOnloadListener(startPaper);
+
+
+//
+//  This statements below are used by Codekit to combine multiple javascript files into a single file.
+//  See https://codekitapp.com for more information.
+//
+//  If you don't use Codekit you can ignore this and use the separate javascript files.
+//  Include them in the html source in the same order as below.
+
+// @codekit-prepend "core.js";
+// @codekit-prepend "boid.js";
+// @codekit-prepend "flock.js";
+// @codekit-prepend "sketch.js";
+
+
