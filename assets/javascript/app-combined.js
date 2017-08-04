@@ -79,6 +79,9 @@ var Boid = Base.extend({
     // distance to stay away from the mouse - original 100
     this.avoidDistance = this.addNoise(100,fnoise);
 
+    // mass - original 1
+    this.mass = this.addNoise(1,fnoise);
+
     //
     //  draw base boid arrow
     //
@@ -115,7 +118,6 @@ var Boid = Base.extend({
   },
 
   applyForce: function(force) {
-    // We could add mass here if we want A = F / M
     this.acceleration = this.acceleration.add(force);
   },
 
@@ -128,10 +130,10 @@ var Boid = Base.extend({
 
     //  Arbitrarily weight these forces
     //  OPTIMIZE: do this multiplication together with other multiplications on this vector
-    sep = sep.multiply(this.separationweight);
-    ali = ali.multiply(this.alignmentweight);
-    coh = coh.multiply(this.cohesionweight);
-    avo = avo.multiply(this.avoidweight);
+    sep = sep.multiply(this.separationweight/this.mass);
+    ali = ali.multiply(this.alignmentweight/this.mass);
+    coh = coh.multiply(this.cohesionweight/this.mass);
+    avo = avo.multiply(this.avoidweight/this.mass);
 
     // Add the force vectors to acceleration
     // OPTIMIZE: there is no need for a separate function for this
