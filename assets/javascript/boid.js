@@ -21,7 +21,7 @@
 //  IDEA 4 - DONE
 //  let the boids react to the mouse cursor
 
-//  IDEA 5
+//  IDEA 5 - DONE and removed again - it is not beneficial
 //  give the boids a limited field of view
 
 //  IDEA 6
@@ -203,6 +203,7 @@ let Boid = Base.extend({
     for (let i = 0; i < n; i++) {
 
       let d = this.position.getDistance(boids[i].position);
+
       // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
       if ((d > 0) && (d < this.desiredseparation)) {
         // Calculate vector pointing away from neighbor
@@ -241,6 +242,7 @@ let Boid = Base.extend({
     for (let i = 0; i < n; i++) {
       // OPTIMIZE: no need to calculate this twice!
       let d = this.position.getDistance(boids[i].position);
+
       if ((d > 0) && (d < this.alignmentneighbordist)) {
         sum = sum.add(boids[i].velocity);
         count++;
