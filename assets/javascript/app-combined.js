@@ -42,7 +42,6 @@ var Boid = Base.extend({
     this.position = new Point(x, y);
     this.acceleration = new Point(0, 0);
 
-
     // randomnessfnoise
     var fnoise = 0.35;
 
@@ -52,8 +51,9 @@ var Boid = Base.extend({
     // Maximum speed - original 3
     this.maxspeed = this.addNoise(3,fnoise);
 
-    //  Give a random starting velocity
-    this.velocity = new Point(0.5*this.addNoise(this.maxspeed,fnoise), 0.5*this.addNoise(this.maxspeed,fnoise));
+    //  Give a random starting velocity based on maxspeed
+    let startVelocity = 0.25;
+    this.velocity = new Point(startVelocity*this.maxspeed*(1-2*Math.random()), startVelocity*this.maxspeed*(1-2*Math.random()));
 
     // Maximum steering force - original 0.05
     this.maxforce = this.addNoise(0.1,fnoise);
@@ -349,7 +349,7 @@ var Flock = Base.extend({
 
 function startPaper() {
   paper.setup('canvas');
-
+  console.log('hello there!')
   var nrBoids = 60;
 
   // Create a new flock
@@ -357,8 +357,47 @@ function startPaper() {
 
   // Add an initial set of boids into the system
   for (var i = 0; i < nrBoids; i++) {
-    var x = Math.random()*view.viewSize.width;
-    var y = Math.random()*view.viewSize.height;
+
+    //
+    //  get a random point on the perimiter
+    //
+    let w = view.viewSize.width;
+    let h = view.viewSize.height;
+    let l = Math.random()*(2*w+2*h);
+    let x = 0;
+    let y = 0;
+
+    // if (l < w) {
+    //   x = l;
+    //   y = 0;
+    //   console.log('top');
+    // } else if (l < (w+h)) {
+    //   x = w;
+    //   y = l - w;
+    //   console.log('right');
+    // } else if (l < (2*w+h)) {
+    //   x = l - (w+h);
+    //   y = h;
+    //   console.log('bottom');
+    // } else {
+    //   x = 0;
+    //   y = l - (2*w+h);
+    //   console.log('left');
+    // }
+
+
+    //
+    //  get random point on the perimiter
+    //  taken from https://stackoverflow.com/questions/9005750/generate-a-random-point-on-a-rectangles-perimeter-with-uniform-distribution
+    //
+    //
+    let r = Math.random();
+    x = w*Math.min(1, Math.max(0, Math.abs((r * 4 - .5) % 4 - 2) - .5));
+    y = h*Math.min(1, Math.max(0, Math.abs((r * 4 + .5) % 4 - 2) - .5));
+
+    //console.log(x,y);
+    //var x = xr*view.viewSize.width;
+    //var y = yr*view.viewSize.height;
     var b = new Boid(x,y);
     flock.addBoid(b);
   }
