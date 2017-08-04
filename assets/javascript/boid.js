@@ -40,30 +40,41 @@ var Boid = Base.extend({
     this.acceleration = new Point(0, 0);
     this.velocity = new Point(Math.random() * 2 - 1, Math.random() * 2 - 1);
 
-    this.r = 3.0; // wraparound distance - original
-    this.maxspeed = 3; // Maximum speed - original 3
-    this.maxforce = 0.1; // Maximum steering force - original 0.05
-    this.desiredseparation = 25.0; // Desired separation between boids - original 25.0
-    this.alignmentneighbordist = 50; // Distance to follow average velocity - original 50
-    this.cohesionneighbordist = 200; // Distance to steer to 'center of gravity' - original 50
-    this.separationweight = 2; // weight of the separation vector - original 1.5
-    this.alignmentweight = 1.0; // weight of the alignment vector - original 1.0
-    this.cohesionweight = 1.2; // weight of the cohesion vector - original 1.0
-    this.avoidweight = 0.1; // weight of the avoid vector - original 1.0
-    this.avoidDistance = 100; // distance to stay away from the mouse - original 100
+    // randomnessfnoise
+    var fnoise = 0.35;
 
-    var variation = 0.5;
+    // wraparound distance - original 3.0
+    this.r = 3.0;
 
-    this.maxspeed *= 1+variation*(1-2*Math.random());
-    this.maxforce *= 1+variation*(1-2*Math.random());
-    //this.desiredseparation *= 1+variation*(1-2*Math.random());
-    this.alignmentneighbordist *= 1+variation*(1-2*Math.random());
-    this.cohesionneighbordist *= 1+variation*(1-2*Math.random());
-    //this.separationweight *= 1+variation*(1-2*Math.random());
-    this.alignmentweight *= 1+variation*(1-2*Math.random());
-    this.cohesionweight *= 1+variation*(1-2*Math.random());
-    this.avoidweight *= 1+variation*(1-2*Math.random());
-    this.avoidDistance *= 1+variation*(1-2*Math.random());
+    // Maximum speed - original 3
+    this.maxspeed = this.addNoise(3,fnoise);
+
+    // Maximum steering force - original 0.05
+    this.maxforce = this.addNoise(0.1,fnoise);
+
+    // Desired separation between boids - original 25.0
+    this.desiredseparation = 25.0; // not random to ensure boids keep some distance
+
+    // Distance to follow average velocity - original 50
+    this.alignmentneighbordist = this.addNoise(50,fnoise);
+
+    // Distance to steer to 'center of gravity' - original 50
+    this.cohesionneighbordist = this.addNoise(200,fnoise);
+
+    // weight of the separation vector - original 1.5
+    this.separationweight = 2; // not random to ensure boids keep some distance
+
+    // weight of the alignment vector - original 1.0
+    this.alignmentweight = this.addNoise(1.0,fnoise);
+
+    // weight of the cohesion vector - original 1.0
+    this.cohesionweight = this.addNoise(1.2,fnoise);
+
+    // weight of the avoid vector - original 1.0
+    this.avoidweight = this.addNoise(0.1,fnoise);
+
+    // distance to stay away from the mouse - original 100
+    this.avoidDistance = this.addNoise(100,fnoise);
 
     //
     //  draw base boid arrow
@@ -89,7 +100,9 @@ var Boid = Base.extend({
     this.arrow.applyMatrix = false;
   },
 
-
+  addNoise: function(parameter,fnoise) {
+    return parameter*(1+fnoise*(1-2*Math.random()));
+  },
 
   run: function(boids, currentMousePos) {
     this.flock(boids, currentMousePos);
