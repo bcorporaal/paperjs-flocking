@@ -41,7 +41,7 @@ var Boid = Base.extend({
   initialize: function(x, y) {
     this.position = new Point(x, y);
     this.acceleration = new Point(0, 0);
-    this.velocity = new Point(Math.random() * 2 - 1, Math.random() * 2 - 1);
+
 
     // randomnessfnoise
     var fnoise = 0.35;
@@ -51,6 +51,9 @@ var Boid = Base.extend({
 
     // Maximum speed - original 3
     this.maxspeed = this.addNoise(3,fnoise);
+
+    //  Give a random starting velocity
+    this.velocity = new Point(0.5*this.addNoise(this.maxspeed,fnoise), 0.5*this.addNoise(this.maxspeed,fnoise));
 
     // Maximum steering force - original 0.05
     this.maxforce = this.addNoise(0.1,fnoise);
