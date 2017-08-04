@@ -33,6 +33,9 @@ paper.install(window);
 //  IDEA 7
 //  add wander behavior if boid is not close to anybody else
 
+//  IDEA 8
+//  confine to screen instead of wrapping around
+
 //  INSPIRATION FOR OPTIMIZATION
 //  https://github.com/hughsk/boids
 //  https://github.com/jrhdoty/SwarmJS
