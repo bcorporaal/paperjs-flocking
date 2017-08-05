@@ -53,36 +53,36 @@ let Boid = Base.extend({
     this.r = 10;
 
     // Maximum speed - original 3
-    this.maxspeed = this.addNoise(1.6, fnoise);
+    this.maxSpeed = this.addNoise(1.6, fnoise);
 
-    //  Give a random starting velocity based on maxspeed
+    //  Give a random starting velocity based on maxSpeed
     const startVelocity = 0.25;
-    this.velocity = new Point(startVelocity * this.maxspeed * (1 - 2 * Math.random()),
-                              startVelocity * this.maxspeed * (1 - 2 * Math.random()));
+    this.velocity = new Point(startVelocity * this.maxSpeed * (1 - 2 * Math.random()),
+                              startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
     // Maximum steering force - original 0.05
-    this.maxforce = this.addNoise(0.04, fnoise);
+    this.maxForce = this.addNoise(0.04, fnoise);
 
     // Desired separation between boids - original 25.0
-    this.desiredseparation = 25.0; // not random to ensure boids keep some distance
+    this.desiredSeparation = 25.0; // not random to ensure boids keep some distance
 
     // Distance to follow average velocity - original 50
-    this.alignmentneighbordist = this.addNoise(50, fnoise);
+    this.alignmentNeighborDist = this.addNoise(50, fnoise);
 
     // Distance to steer to 'center of gravity' - original 50
-    this.cohesionneighbordist = this.addNoise(200, fnoise);
+    this.cohesionNeighborDist = this.addNoise(200, fnoise);
 
     // weight of the separation vector - original 1.5
-    this.separationweight = 2; // not random to ensure boids always keep some distance
+    this.separationWeight = 2; // not random to ensure boids always keep some distance
 
     // weight of the alignment vector - original 1.0
-    this.alignmentweight = this.addNoise(1.0, fnoise);
+    this.alignmentWeight = this.addNoise(1.0, fnoise);
 
     // weight of the cohesion vector - original 1.0
-    this.cohesionweight = this.addNoise(1.2, fnoise);
+    this.cohesionWeight = this.addNoise(1.2, fnoise);
 
     // weight of the avoid vector - original 1.0
-    this.avoidweight = this.addNoise(0.1, fnoise);
+    this.avoidWeight = this.addNoise(0.1, fnoise);
 
     // distance to stay away from the mouse - original 100
     this.avoidDistance = this.addNoise(100, fnoise);
@@ -131,8 +131,8 @@ let Boid = Base.extend({
     this.velocity = this.velocity.add(this.acceleration);
 
     // Limit speed
-    if (this.velocity.length > this.maxspeed) {
-      this.velocity = this.velocity.normalize(this.maxspeed);
+    if (this.velocity.length > this.maxSpeed) {
+      this.velocity = this.velocity.normalize(this.maxSpeed);
     }
 
     this.position = this.position.add(this.velocity);
@@ -146,12 +146,12 @@ let Boid = Base.extend({
     let desired = target.subtract(this.position);
 
     // Normalize desired and scale to maximum speed
-    desired = desired.normalize(this.maxspeed);
+    desired = desired.normalize(this.maxSpeed);
 
     let steer = desired.subtract(this.velocity);
 
-    if (steer.length > this.maxforce) {
-      steer = steer.normalize(this.maxforce);
+    if (steer.length > this.maxForce) {
+      steer = steer.normalize(this.maxForce);
     }
 
     return steer;
@@ -196,25 +196,25 @@ let Boid = Base.extend({
       let d = distances[this.id][i];
 
       //  separation - loop
-      if ((d > 0) && (d < this.desiredseparation)) {
+      if ((d > 0) && (d < this.desiredSeparation)) {
         // calculate vector pointing away from neighbor
         let diff = this.position.subtract(boids[i].position);
         diff = diff.normalize();
         diff = diff.divide(d); // weight by distance
         sepVector = sepVector.add(diff);
-        sepCount++; // keep track of how many are too close
+        sepCount++; // count how many are too close
       }
 
       //  alignment - loop
-      if ((d > 0) && (d < this.alignmentneighbordist)) {
+      if ((d > 0) && (d < this.alignmentNeighborDist)) {
         aliSum = aliSum.add(boids[i].velocity);
         aliCount++;
       }
 
       //  cohesion - loop
-      if ((d > 0) && (d < this.cohesionneighbordist)) {
+      if ((d > 0) && (d < this.cohesionNeighborDist)) {
         cohSum = cohSum.add(boids[i].position); // add location
-        cohCount++;
+        cohCount++; // count how many the boid tries to stay close to
       }
     }
 
@@ -226,21 +226,21 @@ let Boid = Base.extend({
 
       // Implement Reynolds: Steering = Desired - Velocity
       sepVector = sepVector.normalize();
-      sepVector = sepVector.multiply(this.maxspeed);
+      sepVector = sepVector.multiply(this.maxSpeed);
       sepVector = sepVector.subtract(this.velocity);
-      if (sepVector.length > this.maxforce) {
-        sepVector = sepVector.normalize(this.maxforce);
+      if (sepVector.length > this.maxForce) {
+        sepVector = sepVector.normalize(this.maxForce);
       }
     }
 
     //  alignment - results
     if (aliCount > 0) {
       aliSum = aliSum.divide(aliCount);
-      aliSum = aliSum.normalize(this.maxspeed);
+      aliSum = aliSum.normalize(this.maxSpeed);
 
       aliVector = aliSum.subtract(this.velocity);
-      if (aliVector.length > this.maxforce) {
-        aliVector = aliVector.normalize(this.maxforce);
+      if (aliVector.length > this.maxForce) {
+        aliVector = aliVector.normalize(this.maxForce);
       }
     }
 
@@ -270,10 +270,10 @@ let Boid = Base.extend({
     //
 
     //  weigh these forces and apply the mass of the boid
-    sepVector = sepVector.multiply(this.separationweight / this.mass);
-    aliVector = aliVector.multiply(this.alignmentweight / this.mass);
-    cohVector = cohVector.multiply(this.cohesionweight / this.mass);
-    avoVector = avoVector.multiply(this.avoidweight / this.mass);
+    sepVector = sepVector.multiply(this.separationWeight / this.mass);
+    aliVector = aliVector.multiply(this.alignmentWeight / this.mass);
+    cohVector = cohVector.multiply(this.cohesionWeight / this.mass);
+    avoVector = avoVector.multiply(this.avoidWeight / this.mass);
 
     // add the force vectors to acceleration
     this.acceleration = this.acceleration.add(sepVector);
