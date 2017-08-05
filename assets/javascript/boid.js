@@ -7,7 +7,7 @@
 //
 //  Ideas for features and optimization
 
-//  IDEA 1
+//  IDEA 1 - DONE
 //  Preprocess all the boids and store the distances in a matrix
 //  -> this reduces the number of calculations
 //  -> give each boid an id to easily find itself in the matrix
@@ -38,9 +38,10 @@
 //  https://github.com/jrhdoty/SwarmJS
 
 let Boid = Base.extend({
-  initialize: function(x, y) {
+  initialize: function(id, x, y) {
     this.position = new Point(x, y);
     this.acceleration = new Point(0, 0);
+    this.id = id;
 
     // randomnessfnoise
     const fnoise = 0.35;
@@ -113,8 +114,8 @@ let Boid = Base.extend({
     return parameter*(1+fnoise*(1-2*Math.random()));
   },
 
-  run: function(boids, currentMousePos) {
-    this.flock(boids, currentMousePos);
+  run: function(boids, currentMousePos, distances) {
+    this.flock(boids, currentMousePos, distances);
     this.update();
     this.borders();
     this.render();
@@ -124,11 +125,13 @@ let Boid = Base.extend({
     this.acceleration = this.acceleration.add(force);
   },
 
-  flock: function(boids, currentMousePos) {
+  flock: function(boids, currentMousePos, distances) {
 
-    let sep = this.separate(boids); // Separation
-    let ali = this.alignment(boids); // Alignment
-    let coh = this.cohesion(boids); // Cohesion
+    //console.log(distances);
+
+    let sep = this.separate(boids, distances); // Separation
+    let ali = this.alignment(boids, distances); // Alignment
+    let coh = this.cohesion(boids, distances); // Cohesion
     let avo = this.avoid(currentMousePos); // Avoid
 
     //  Arbitrarily weight these forces
@@ -194,7 +197,7 @@ let Boid = Base.extend({
 
   // Separation
   // Method checks for nearby boids and steers away
-  separate: function(boids) {
+  separate: function(boids, distances) {
 
     let steer = new Point(0, 0);
     let count = 0;
@@ -202,7 +205,7 @@ let Boid = Base.extend({
     let n = boids.length;
     for (let i = 0; i < n; i++) {
 
-      let d = this.position.getDistance(boids[i].position);
+      let d = distances[this.id][i];
 
       // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
       if ((d > 0) && (d < this.desiredseparation)) {
@@ -234,14 +237,14 @@ let Boid = Base.extend({
 
   // Alignment
   // For every nearby boid in the system, calculate the average velocity
-  alignment: function(boids) {
+  alignment: function(boids, distances) {
 
     let sum = new Point(0, 0);
     let count = 0;
     let n = boids.length;
     for (let i = 0; i < n; i++) {
-      // OPTIMIZE: no need to calculate this twice!
-      let d = this.position.getDistance(boids[i].position);
+
+      let d = distances[this.id][i];
 
       if ((d > 0) && (d < this.alignmentneighbordist)) {
         sum = sum.add(boids[i].velocity);
@@ -265,14 +268,16 @@ let Boid = Base.extend({
 
   // Cohesion
   // For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location
-  cohesion: function(boids) {
+  cohesion: function(boids, distances) {
 
     let sum = new Point(0, 0); // Start with empty vector to accumulate all locations
     let count = 0;
     let n = boids.length;
 
     for (let i = 0; i < n; i++) {
-      let d = this.position.getDistance(boids[i].position);
+
+      let d = distances[this.id][i];
+
       if ((d > 0) && (d < this.cohesionneighbordist)) {
         sum = sum.add(boids[i].position); // Add location
         count++;
