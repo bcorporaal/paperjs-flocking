@@ -12,7 +12,7 @@
 //  -> this reduces the number of calculations
 //  -> give each boid an id to easily find itself in the matrix
 
-//  IDEA 2
+//  IDEA 2 - DONE
 //  do all calculations in one loop, reduce duplication
 
 //  IDEA 3
@@ -50,41 +50,42 @@ let Boid = Base.extend({
     this.r = 10;
 
     // Maximum speed - original 3
-    this.maxspeed = this.addNoise(1.6,fnoise);
+    this.maxspeed = this.addNoise(1.6, fnoise);
 
     //  Give a random starting velocity based on maxspeed
     const startVelocity = 0.25;
-    this.velocity = new Point(startVelocity*this.maxspeed*(1-2*Math.random()), startVelocity*this.maxspeed*(1-2*Math.random()));
+    this.velocity = new Point(startVelocity * this.maxspeed * (1 - 2 * Math.random()),
+                              startVelocity * this.maxspeed * (1 - 2 * Math.random()));
 
     // Maximum steering force - original 0.05
-    this.maxforce = this.addNoise(0.04,fnoise);
+    this.maxforce = this.addNoise(0.04, fnoise);
 
     // Desired separation between boids - original 25.0
     this.desiredseparation = 25.0; // not random to ensure boids keep some distance
 
     // Distance to follow average velocity - original 50
-    this.alignmentneighbordist = this.addNoise(50,fnoise);
+    this.alignmentneighbordist = this.addNoise(50, fnoise);
 
     // Distance to steer to 'center of gravity' - original 50
-    this.cohesionneighbordist = this.addNoise(200,fnoise);
+    this.cohesionneighbordist = this.addNoise(200, fnoise);
 
     // weight of the separation vector - original 1.5
     this.separationweight = 2; // not random to ensure boids always keep some distance
 
     // weight of the alignment vector - original 1.0
-    this.alignmentweight = this.addNoise(1.0,fnoise);
+    this.alignmentweight = this.addNoise(1.0, fnoise);
 
     // weight of the cohesion vector - original 1.0
-    this.cohesionweight = this.addNoise(1.2,fnoise);
+    this.cohesionweight = this.addNoise(1.2, fnoise);
 
     // weight of the avoid vector - original 1.0
-    this.avoidweight = this.addNoise(0.1,fnoise);
+    this.avoidweight = this.addNoise(0.1, fnoise);
 
     // distance to stay away from the mouse - original 100
-    this.avoidDistance = this.addNoise(100,fnoise);
+    this.avoidDistance = this.addNoise(100, fnoise);
 
     // mass - original 1
-    this.mass = this.addNoise(1,fnoise);
+    this.mass = this.addNoise(1, fnoise);
 
     //
     //  draw base boid arrow
@@ -110,8 +111,8 @@ let Boid = Base.extend({
     this.arrow.applyMatrix = false;
   },
 
-  addNoise: function(parameter,fnoise) {
-    return parameter*(1+fnoise*(1-2*Math.random()));
+  addNoise: function(parameter, fnoise) {
+    return parameter * (1 + fnoise * (1 - 2 * Math.random()));
   },
 
   run: function(boids, currentMousePos, distances) {
@@ -119,34 +120,6 @@ let Boid = Base.extend({
     this.update();
     this.borders();
     this.render();
-  },
-
-  applyForce: function(force) {
-    this.acceleration = this.acceleration.add(force);
-  },
-
-  flock: function(boids, currentMousePos, distances) {
-
-    //console.log(distances);
-
-    let sep = this.separate(boids, distances); // Separation
-    let ali = this.alignment(boids, distances); // Alignment
-    let coh = this.cohesion(boids, distances); // Cohesion
-    let avo = this.avoid(currentMousePos); // Avoid
-
-    //  Arbitrarily weight these forces
-    //  OPTIMIZE: do this multiplication together with other multiplications on this vector
-    sep = sep.multiply(this.separationweight/this.mass);
-    ali = ali.multiply(this.alignmentweight/this.mass);
-    coh = coh.multiply(this.cohesionweight/this.mass);
-    avo = avo.multiply(this.avoidweight/this.mass);
-
-    // Add the force vectors to acceleration
-    // OPTIMIZE: there is no need for a separate function for this
-    this.applyForce(sep);
-    this.applyForce(ali);
-    this.applyForce(coh);
-    this.applyForce(avo);
   },
 
   update: function() {
@@ -195,110 +168,88 @@ let Boid = Base.extend({
     this.arrow.rotate(this.velocity.angle - this.arrow.rotation);
   },
 
-  // Separation
-  // Method checks for nearby boids and steers away
-  separate: function(boids, distances) {
+  //
+  //  Flock - all boid influences in a single loop
+  //
+  flock: function(boids, currentMousePos, distances) {
+    let sepVector = new Point(0, 0); // Separation
+    let aliVector = new Point(0, 0); // Alignment
+    let cohVector = new Point(0, 0); // Cohesion
+    let avoVector = new Point(0, 0); // Avoid
 
-    let steer = new Point(0, 0);
-    let count = 0;
-    // For every boid in the system, check if it's too close
+    let sepCount = 0;
+    let aliSum = new Point(0, 0);
+    let aliCount = 0;
+    let cohSum = new Point(0, 0);
+    let cohCount = 0;
+
     let n = boids.length;
+
+    //
+    //  loop all boids
+    //
     for (let i = 0; i < n; i++) {
 
       let d = distances[this.id][i];
 
-      // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+      //  separation - loop
       if ((d > 0) && (d < this.desiredseparation)) {
-        // Calculate vector pointing away from neighbor
+        // calculate vector pointing away from neighbor
         let diff = this.position.subtract(boids[i].position);
         diff = diff.normalize();
-        diff = diff.divide(d); // Weight by distance
-        steer = steer.add(diff);
-        count++; // Keep track of how many are too close
+        diff = diff.divide(d); // weight by distance
+        sepVector = sepVector.add(diff);
+        sepCount++; // keep track of how many are too close
       }
-    }
-    // Average -- divide by how many
-    if (count > 0) {
-      steer = steer.divide(count);
-    }
 
-    // As long as the vector is greater than 0
-    if (steer.length > 0) {
-      // Implement Reynolds: Steering = Desired - Velocity
-      steer = steer.normalize();
-      steer = steer.multiply(this.maxspeed);
-      steer = steer.subtract(this.velocity);
-      if (steer.length > this.maxforce) {
-        steer = steer.normalize(this.maxforce);
-      }
-    }
-    return steer;
-  },
-
-  // Alignment
-  // For every nearby boid in the system, calculate the average velocity
-  alignment: function(boids, distances) {
-
-    let sum = new Point(0, 0);
-    let count = 0;
-    let n = boids.length;
-    for (let i = 0; i < n; i++) {
-
-      let d = distances[this.id][i];
-
+      //  alignment - loop
       if ((d > 0) && (d < this.alignmentneighbordist)) {
-        sum = sum.add(boids[i].velocity);
-        count++;
+        aliSum = aliSum.add(boids[i].velocity);
+        aliCount++;
       }
-    }
 
-    if (count > 0) {
-      // OPTIMIZE: this code is repeated in other places
-      sum = sum.divide(count);
-      sum = sum.normalize(this.maxspeed);
-      let steer = sum.subtract(this.velocity);
-      if (steer.length > this.maxforce) {
-        steer = steer.normalize(this.maxforce);
-      }
-      return steer;
-    } else {
-      return new Point(0, 0); // OPTIMIZE: If count == 0 then steer should also be 0,0 so always send steer
-    }
-  },
-
-  // Cohesion
-  // For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location
-  cohesion: function(boids, distances) {
-
-    let sum = new Point(0, 0); // Start with empty vector to accumulate all locations
-    let count = 0;
-    let n = boids.length;
-
-    for (let i = 0; i < n; i++) {
-
-      let d = distances[this.id][i];
-
+      //  cohesion - loop
       if ((d > 0) && (d < this.cohesionneighbordist)) {
-        sum = sum.add(boids[i].position); // Add location
-        count++;
+        cohSum = cohSum.add(boids[i].position); // add location
+        cohCount++;
       }
     }
 
-    if (count > 0) {
-      sum = sum.divide(count);
-      return this.seek(sum); // Steer towards the location
-    } else {
-      return new Point();
+    //  process the results from the loop
+
+    //  separation - results
+    if (sepCount > 0) {
+      sepVector = sepVector.divide(sepCount);
+
+      // Implement Reynolds: Steering = Desired - Velocity
+      sepVector = sepVector.normalize();
+      sepVector = sepVector.multiply(this.maxspeed);
+      sepVector = sepVector.subtract(this.velocity);
+      if (sepVector.length > this.maxforce) {
+        sepVector = sepVector.normalize(this.maxforce);
+      }
     }
 
-  },
+    //  alignment - results
+    if (aliCount > 0) {
+      aliSum = aliSum.divide(aliCount);
+      aliSum = aliSum.normalize(this.maxspeed);
 
-  //  Avoid
-  //  Stay away from the current mouse position
-  avoid: function(currentMousePos) {
+      aliVector = aliSum.subtract(this.velocity);
+      if (aliVector.length > this.maxforce) {
+        aliVector = aliVector.normalize(this.maxforce);
+      }
+    }
+
+    //  cohesion - results
+    if (cohCount > 0) {
+      cohSum = cohSum.divide(cohCount);
+      cohVector = this.seek(cohSum); // Steer towards the location
+    }
+
+    //  avoid - results
     let ap = currentMousePos.subtract(this.position);
     let apLength = ap.length;
-
 
     // OPTIMIZE: make strength of avoidVector correlate to distance from mouse
     if (apLength < this.avoidDistance) {
@@ -307,11 +258,24 @@ let Boid = Base.extend({
       ab = ab.normalize();
       ab = ab.multiply(ap.dot(ab));
 
-      let avoidVector = ab.subtract(ap).multiply(1-(apLength/this.avoidDistance));
-
-      return avoidVector.normalize();
-    } else {
-      return new Point(0, 0);
+      avoVector = ab.subtract(ap).multiply(1 - (apLength / this.avoidDistance));
+      avoVector = avoVector.normalize();
     }
+
+    //
+    //  combine
+    //
+
+    //  weigh these forces and apply the mass of the boid
+    sepVector = sepVector.multiply(this.separationweight / this.mass);
+    aliVector = aliVector.multiply(this.alignmentweight / this.mass);
+    cohVector = cohVector.multiply(this.cohesionweight / this.mass);
+    avoVector = avoVector.multiply(this.avoidweight / this.mass);
+
+    // add the force vectors to acceleration
+    this.acceleration = this.acceleration.add(sepVector);
+    this.acceleration = this.acceleration.add(aliVector);
+    this.acceleration = this.acceleration.add(cohVector);
+    this.acceleration = this.acceleration.add(avoVector);
   }
 });
