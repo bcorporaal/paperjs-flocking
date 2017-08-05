@@ -15,7 +15,7 @@ paper.install(window);
 //  -> this reduces the number of calculations
 //  -> give each boid an id to easily find itself in the matrix
 
-//  IDEA 2
+//  IDEA 2 - DONE
 //  do all calculations in one loop, reduce duplication
 
 //  IDEA 3
@@ -119,36 +119,10 @@ let Boid = Base.extend({
   },
 
   run: function(boids, currentMousePos, distances) {
-    this.flock2(boids, currentMousePos, distances);
+    this.flock(boids, currentMousePos, distances);
     this.update();
     this.borders();
     this.render();
-  },
-
-  // applyForce: function(force) {
-  //   this.acceleration = this.acceleration.add(force);
-  // },
-
-  flock: function(boids, currentMousePos, distances) {
-
-    let sep = this.separate(boids, distances); // Separation
-    let ali = this.alignment(boids, distances); // Alignment
-    let coh = this.cohesion(boids, distances); // Cohesion
-    let avo = this.avoid(currentMousePos); // Avoid
-
-    //  Arbitrarily weight these forces
-    //  OPTIMIZE: do this multiplication together with other multiplications on this vector
-    sep = sep.multiply(this.separationweight / this.mass);
-    ali = ali.multiply(this.alignmentweight / this.mass);
-    coh = coh.multiply(this.cohesionweight / this.mass);
-    avo = avo.multiply(this.avoidweight / this.mass);
-
-    // Add the force vectors to acceleration
-    // OPTIMIZE: there is no need for a separate function for this
-    this.applyForce(sep);
-    this.applyForce(ali);
-    this.applyForce(coh);
-    this.applyForce(avo);
   },
 
   update: function() {
@@ -197,130 +171,10 @@ let Boid = Base.extend({
     this.arrow.rotate(this.velocity.angle - this.arrow.rotation);
   },
 
-  // Separation
-  // Method checks for nearby boids and steers away
-  separate: function(boids, distances) {
-
-    let steer = new Point(0, 0);
-    let count = 0;
-    // For every boid in the system, check if it's too close
-    let n = boids.length;
-    for (let i = 0; i < n; i++) {
-
-      let d = distances[this.id][i];
-
-      // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
-      if ((d > 0) && (d < this.desiredseparation)) {
-        // Calculate vector pointing away from neighbor
-        let diff = this.position.subtract(boids[i].position);
-        diff = diff.normalize();
-        diff = diff.divide(d); // Weight by distance
-        steer = steer.add(diff);
-        count++; // Keep track of how many are too close
-      }
-    }
-    // Average -- divide by how many
-    if (count > 0) {
-      steer = steer.divide(count);
-    }
-
-    // As long as the vector is greater than 0
-    if (steer.length > 0) {
-      // Implement Reynolds: Steering = Desired - Velocity
-      steer = steer.normalize();
-      steer = steer.multiply(this.maxspeed);
-      steer = steer.subtract(this.velocity);
-      if (steer.length > this.maxforce) {
-        steer = steer.normalize(this.maxforce);
-      }
-    }
-    return steer;
-  },
-
-  // Alignment
-  // For every nearby boid in the system, calculate the average velocity
-  alignment: function(boids, distances) {
-
-    let sum = new Point(0, 0);
-    let count = 0;
-    let n = boids.length;
-    for (let i = 0; i < n; i++) {
-
-      let d = distances[this.id][i];
-
-      if ((d > 0) && (d < this.alignmentneighbordist)) {
-        sum = sum.add(boids[i].velocity);
-        count++;
-      }
-    }
-
-    if (count > 0) {
-      // OPTIMIZE: this code is repeated in other places
-      sum = sum.divide(count);
-      sum = sum.normalize(this.maxspeed);
-      let steer = sum.subtract(this.velocity);
-      if (steer.length > this.maxforce) {
-        steer = steer.normalize(this.maxforce);
-      }
-      return steer;
-    } else {
-      return new Point(0, 0); // OPTIMIZE: If count == 0 then steer should also be 0,0 so always send steer
-    }
-  },
-
-  // Cohesion
-  // For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location
-  cohesion: function(boids, distances) {
-
-    let sum = new Point(0, 0); // Start with empty vector to accumulate all locations
-    let count = 0;
-    let n = boids.length;
-
-    for (let i = 0; i < n; i++) {
-
-      let d = distances[this.id][i];
-
-      if ((d > 0) && (d < this.cohesionneighbordist)) {
-        sum = sum.add(boids[i].position); // Add location
-        count++;
-      }
-    }
-
-    if (count > 0) {
-      sum = sum.divide(count);
-      return this.seek(sum); // Steer towards the location
-    } else {
-      return new Point();
-    }
-
-  },
-
-  //  Avoid
-  //  Stay away from the current mouse position
-  avoid: function(currentMousePos) {
-    let ap = currentMousePos.subtract(this.position);
-    let apLength = ap.length;
-
-
-    // OPTIMIZE: make strength of avoidVector correlate to distance from mouse
-    if (apLength < this.avoidDistance) {
-      let ab = this.position.add(this.velocity);
-
-      ab = ab.normalize();
-      ab = ab.multiply(ap.dot(ab));
-
-      let avoidVector = ab.subtract(ap).multiply(1 - (apLength / this.avoidDistance));
-
-      return avoidVector.normalize();
-    } else {
-      return new Point(0, 0);
-    }
-  },
-
   //
-  //  Flock 2 - all influences in a single loop
+  //  Flock - all boid influences in a single loop
   //
-  flock2: function(boids, currentMousePos, distances) {
+  flock: function(boids, currentMousePos, distances) {
     let sepVector = new Point(0, 0); // Separation
     let aliVector = new Point(0, 0); // Alignment
     let cohVector = new Point(0, 0); // Cohesion
