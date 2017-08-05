@@ -30,7 +30,7 @@ function startPaper() {
     let r = Math.random();
     x = w*Math.min(1, Math.max(0, Math.abs((r * 4 - .5) % 4 - 2) - .5))-frame;
     y = h*Math.min(1, Math.max(0, Math.abs((r * 4 + .5) % 4 - 2) - .5))-frame;
-    let b = new Boid(x,y);
+    let b = new Boid(i,x,y);
     flock.addBoid(b);
   }
 
