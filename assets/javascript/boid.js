@@ -116,7 +116,7 @@ let Boid = Base.extend({
   },
 
   run: function(boids, currentMousePos, distances) {
-    this.flock(boids, currentMousePos, distances);
+    this.flockStep(boids, currentMousePos, distances);
     this.update();
     this.borders();
     this.render();
@@ -169,9 +169,9 @@ let Boid = Base.extend({
   },
 
   //
-  //  Flock - all boid influences in a single loop
+  //  flockStep - all boid influences in a single loop
   //
-  flock: function(boids, currentMousePos, distances) {
+  flockStep: function(boids, currentMousePos, distances) {
     let sepVector = new Point(0, 0); // Separation
     let aliVector = new Point(0, 0); // Alignment
     let cohVector = new Point(0, 0); // Cohesion
