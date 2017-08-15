@@ -43,11 +43,14 @@ let Boid = Base.extend({
         arrowEnd = arrowStart.subtract(new Point(arrowLength, 0));
 
 
-    this.arrow = new Group([new Path([arrowEnd, arrowStart]), new Path([arrowStart.add(arrowSide.rotate(135)), arrowStart, arrowStart.add(arrowSide.rotate(-135))])]);
+    this.arrowOriginal = new Group([new Path([arrowEnd, arrowStart]), new Path([arrowStart.add(arrowSide.rotate(135)), arrowStart, arrowStart.add(arrowSide.rotate(-135))])]);
 
-    this.arrow.strokeWidth = 1;
-    this.arrow.strokeColor = '#1C1A20';
-    this.arrow.applyMatrix = !1;
+    this.arrowOriginal.strokeWidth = 1;
+    this.arrowOriginal.strokeColor = '#1C1A20';
+    this.arrowOriginal.applyMatrix = !1;
+
+    this.arrow = this.arrowOriginal.rasterize();
+    this.arrowOriginal.remove();
   },
 
   addNoise: function (parameter, fnoise) {
@@ -225,7 +228,7 @@ let Flock = Base.extend({
 
 function startPaper() {
   paper.setup('boid-canvas');
-  const nrBoids = 60;
+  const nrBoids = 80;
 
   flock = new Flock();
 
