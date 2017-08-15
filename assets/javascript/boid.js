@@ -44,13 +44,13 @@ let Boid = Base.extend({
     this.id = id;
 
     // randomnessfnoise
-    const fnoise = 0.35;
+    const fnoise = 0.40;
 
     // wraparound distance - original 3.0
     this.r = 10;
 
     // Maximum speed - original 3
-    this.maxSpeed = this.addNoise(1.6, fnoise);
+    this.maxSpeed = this.addNoise(1.7, fnoise);
 
     //  Give a random starting velocity based on maxSpeed
     const startVelocity = 0.25;
@@ -58,10 +58,10 @@ let Boid = Base.extend({
                               startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
     // Maximum steering force - original 0.05
-    this.maxForce = this.addNoise(0.04, fnoise);
+    this.maxForce = this.addNoise(0.06, fnoise);
 
     // Desired separation between boids - original 25.0
-    this.desiredSeparation = 25.0; // not random to ensure boids keep some distance
+    this.desiredSeparation = 30.0; // not random to ensure boids keep some distance
 
     // Distance to follow average velocity - original 50
     this.alignmentNeighborDist = this.addNoise(50, fnoise);
@@ -90,8 +90,8 @@ let Boid = Base.extend({
     //
     //  draw base boid arrow
     //
-    const arrowLength = 6;
-    const arrowSideLength = 6;
+    const arrowLength = 7;
+    const arrowSideLength = 7;
 
     let arrowSide = new Point(arrowSideLength, 0);
     let arrowStart = new Point(0, 0);

@@ -7,18 +7,18 @@ let Boid = Base.extend({
     this.acceleration = new Point(0, 0);
     this.id = id;
 
-    const fnoise = 0.35;
+    const fnoise = 0.40;
 
     this.r = 10;
 
-    this.maxSpeed = this.addNoise(1.6, fnoise);
+    this.maxSpeed = this.addNoise(1.7, fnoise);
 
     const startVelocity = 0.25;
     this.velocity = new Point(startVelocity * this.maxSpeed * (1 - 2 * Math.random()), startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
-    this.maxForce = this.addNoise(0.04, fnoise);
+    this.maxForce = this.addNoise(0.06, fnoise);
 
-    this.desiredSeparation = 25.0;
+    this.desiredSeparation = 30.0;
     this.alignmentNeighborDist = this.addNoise(50, fnoise);
 
     this.cohesionNeighborDist = this.addNoise(200, fnoise);
@@ -34,8 +34,8 @@ let Boid = Base.extend({
 
     this.mass = this.addNoise(1, fnoise);
 
-    const arrowLength = 6,
-          arrowSideLength = 6;
+    const arrowLength = 7,
+          arrowSideLength = 7;
 
 
     let arrowSide = new Point(arrowSideLength, 0),
@@ -225,7 +225,7 @@ let Flock = Base.extend({
 
 function startPaper() {
   paper.setup('boid-canvas');
-  const nrBoids = 80;
+  const nrBoids = 60;
 
   flock = new Flock();
 
