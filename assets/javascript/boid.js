@@ -57,8 +57,15 @@ let Boid = Base.extend({
     this.velocity = new Point(startVelocity * this.maxSpeed * (1 - 2 * Math.random()),
                               startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
+    // Keep track of the previous angle
+    this.oldAngle = this.velocity.angle;
+
     // Maximum steering force - original 0.05
     this.maxForce = this.addNoise(0.04, fnoise);
+
+    // Maximum rotation angle per frame - optional constraint
+    this.maxRotation = 0.05;
+    this.enforceMaximumRotation = false;
 
     // Desired separation between boids - original 25.0
     this.desiredSeparation = 30.0; // not random to ensure boids keep some distance
@@ -138,6 +145,22 @@ let Boid = Base.extend({
     // Limit speed
     if (this.velocity.length > this.maxSpeed) {
       this.velocity = this.velocity.normalize(this.maxSpeed);
+    }
+
+    // Limit rotation by rotating back if it exceeds the maximum rotation
+    if (this.enforceMaximumRotation) {
+      let desiredAngle = this.velocity.angle;
+      let deltaAngle = desiredAngle - this.oldAngle;
+      let absDeltaAngle = Math.abs(deltaAngle);
+
+      if (absDeltaAngle > this.maxRotation) {
+        let newAngle = 0;
+        newAngle = this.oldAngle+this.maxRotation*Math.sign(deltaAngle);
+        this.velocity.rotate(desiredAngle-newAngle);
+        this.oldAngle = newAngle;
+      } else {
+        this.oldAngle = desiredAngle;
+      }
     }
 
     this.position = this.position.add(this.velocity);

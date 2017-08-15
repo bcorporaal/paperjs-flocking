@@ -16,7 +16,12 @@ let Boid = Base.extend({
     const startVelocity = 0.25;
     this.velocity = new Point(startVelocity * this.maxSpeed * (1 - 2 * Math.random()), startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
+    this.oldAngle = this.velocity.angle;
+
     this.maxForce = this.addNoise(0.04, fnoise);
+
+    this.maxRotation = 0.05;
+    this.enforceMaximumRotation = !1;
 
     this.desiredSeparation = 30.0;
     this.desiredSeparation *= this.desiredSeparation;
@@ -73,6 +78,22 @@ let Boid = Base.extend({
 
     if (this.velocity.length > this.maxSpeed) {
       this.velocity = this.velocity.normalize(this.maxSpeed);
+    }
+
+    if (this.enforceMaximumRotation) {
+      let desiredAngle = this.velocity.angle,
+          deltaAngle = desiredAngle - this.oldAngle,
+          absDeltaAngle = Math.abs(deltaAngle);
+
+
+      if (absDeltaAngle > this.maxRotation) {
+        let newAngle = 0;
+        newAngle = this.oldAngle + this.maxRotation * Math.sign(deltaAngle);
+        this.velocity.rotate(desiredAngle - newAngle);
+        this.oldAngle = newAngle;
+      } else {
+        this.oldAngle = desiredAngle;
+      }
     }
 
     this.position = this.position.add(this.velocity);
