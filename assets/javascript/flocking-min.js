@@ -19,9 +19,13 @@ let Boid = Base.extend({
     this.maxForce = this.addNoise(0.06, fnoise);
 
     this.desiredSeparation = 30.0;
+    this.desiredSeparation *= this.desiredSeparation;
+
     this.alignmentNeighborDist = this.addNoise(50, fnoise);
+    this.alignmentNeighborDist *= this.alignmentNeighborDist;
 
     this.cohesionNeighborDist = this.addNoise(200, fnoise);
+    this.cohesionNeighborDist *= this.cohesionNeighborDist;
 
     this.separationWeight = 2;
     this.alignmentWeight = this.addNoise(1.0, fnoise);
@@ -213,7 +217,7 @@ let Flock = Base.extend({
         this.distances[i] = [];
         this.distances[i][i] = 0;
         for (let j = 0; j < i; j++) {
-          d = this.boids[i].position.getDistance(this.boids[j].position);
+          d = this.boids[i].position.getDistance(this.boids[j].position, !0);
           this.distances[i][j] = d;
           this.distances[j][i] = d;
         }

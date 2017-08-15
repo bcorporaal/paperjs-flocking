@@ -62,12 +62,17 @@ let Boid = Base.extend({
 
     // Desired separation between boids - original 25.0
     this.desiredSeparation = 30.0; // not random to ensure boids keep some distance
+    this.desiredSeparation *= this.desiredSeparation;
 
     // Distance to follow average velocity - original 50
     this.alignmentNeighborDist = this.addNoise(50, fnoise);
+    this.alignmentNeighborDist *= this.alignmentNeighborDist;
 
     // Distance to steer to 'center of gravity' - original 50
     this.cohesionNeighborDist = this.addNoise(200, fnoise);
+    this.cohesionNeighborDist *= this.cohesionNeighborDist;
+
+    // these distances are squared to avoid calculating square roots
 
     // weight of the separation vector - original 1.5
     this.separationWeight = 2; // not random to ensure boids always keep some distance

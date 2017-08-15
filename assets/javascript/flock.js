@@ -24,7 +24,7 @@ let Flock = Base.extend({
   run: function() {
     this.frameCounter++;
 
-    //  calculate an array with all the distances (so not each boid has to do that individually)
+    //  calculate an array with all the squared distances (so not each boid has to do that individually)
     //  only do this calculation every other frame
     if (this.frameCounter%2 == 1) {
       let d = 0;
@@ -32,7 +32,7 @@ let Flock = Base.extend({
         this.distances[i] = [];
         this.distances[i][i] = 0;
         for (let j = 0; j < i; j++) {
-          d = this.boids[i].position.getDistance(this.boids[j].position);
+          d = this.boids[i].position.getDistance(this.boids[j].position, true);
           this.distances[i][j] = d;
           this.distances[j][i] = d;
         }
