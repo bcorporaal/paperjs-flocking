@@ -58,7 +58,7 @@ let Boid = Base.extend({
                               startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
     // Maximum steering force - original 0.05
-    this.maxForce = this.addNoise(0.06, fnoise);
+    this.maxForce = this.addNoise(0.04, fnoise);
 
     // Desired separation between boids - original 25.0
     this.desiredSeparation = 30.0; // not random to ensure boids keep some distance

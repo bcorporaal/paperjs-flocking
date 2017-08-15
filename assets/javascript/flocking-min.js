@@ -16,7 +16,7 @@ let Boid = Base.extend({
     const startVelocity = 0.25;
     this.velocity = new Point(startVelocity * this.maxSpeed * (1 - 2 * Math.random()), startVelocity * this.maxSpeed * (1 - 2 * Math.random()));
 
-    this.maxForce = this.addNoise(0.06, fnoise);
+    this.maxForce = this.addNoise(0.04, fnoise);
 
     this.desiredSeparation = 30.0;
     this.desiredSeparation *= this.desiredSeparation;
