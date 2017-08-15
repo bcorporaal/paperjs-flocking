@@ -196,6 +196,7 @@ let Flock = Base.extend({
     this.l = 0;
     this.currentMousePos = new Point();
     this.distances = [];
+    this.frameCounter = 0;
   },
 
   addBoid: function (newBoid) {
@@ -204,14 +205,18 @@ let Flock = Base.extend({
   },
 
   run: function () {
-    let d = 0;
-    for (let i = 0; i < this.l; i++) {
-      this.distances[i] = [];
-      this.distances[i][i] = 0;
-      for (let j = 0; j < i; j++) {
-        d = this.boids[i].position.getDistance(this.boids[j].position);
-        this.distances[i][j] = d;
-        this.distances[j][i] = d;
+    this.frameCounter++;
+
+    if (this.frameCounter % 2 == 1) {
+      let d = 0;
+      for (let i = 0; i < this.l; i++) {
+        this.distances[i] = [];
+        this.distances[i][i] = 0;
+        for (let j = 0; j < i; j++) {
+          d = this.boids[i].position.getDistance(this.boids[j].position);
+          this.distances[i][j] = d;
+          this.distances[j][i] = d;
+        }
       }
     }
 

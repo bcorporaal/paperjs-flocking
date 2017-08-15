@@ -13,6 +13,7 @@ let Flock = Base.extend({
     this.l = 0; // Track the number of boids
     this.currentMousePos = new Point();
     this.distances = []; // array with the distance between all the boids
+    this.frameCounter = 0;
   },
 
   addBoid: function(newBoid) {
@@ -21,16 +22,20 @@ let Flock = Base.extend({
   },
 
   run: function() {
+    this.frameCounter++;
+
     //  calculate an array with all the distances (so not each boid has to do that individually)
-    //  OPTIMIZE: use squared distance to remove one calculation
-    let d = 0;
-    for (let i = 0; i < this.l; i++) {
-      this.distances[i] = [];
-      this.distances[i][i] = 0;
-      for (let j = 0; j < i; j++) {
-        d = this.boids[i].position.getDistance(this.boids[j].position);
-        this.distances[i][j] = d;
-        this.distances[j][i] = d;
+    //  only do this calculation every other frame
+    if (this.frameCounter%2 == 1) {
+      let d = 0;
+      for (let i = 0; i < this.l; i++) {
+        this.distances[i] = [];
+        this.distances[i][i] = 0;
+        for (let j = 0; j < i; j++) {
+          d = this.boids[i].position.getDistance(this.boids[j].position);
+          this.distances[i][j] = d;
+          this.distances[j][i] = d;
+        }
       }
     }
 
