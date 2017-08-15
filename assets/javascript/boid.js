@@ -97,7 +97,7 @@ let Boid = Base.extend({
     let arrowStart = new Point(0, 0);
     let arrowEnd = arrowStart.subtract(new Point(arrowLength, 0));
 
-    this.arrow = new Group([
+    this.arrowOriginal = new Group([
       new Path([arrowEnd, arrowStart]),
       new Path([
         arrowStart.add(arrowSide.rotate(135)),
@@ -106,9 +106,12 @@ let Boid = Base.extend({
       ])
     ]);
 
-    this.arrow.strokeWidth = 1;
-    this.arrow.strokeColor = '#1C1A20';
-    this.arrow.applyMatrix = false;
+    this.arrowOriginal.strokeWidth = 1;
+    this.arrowOriginal.strokeColor = '#1C1A20';
+    this.arrowOriginal.applyMatrix = false;
+
+    this.arrow = this.arrowOriginal.rasterize();
+    this.arrowOriginal.remove();
   },
 
   addNoise: function(parameter, fnoise) {
