@@ -19,6 +19,18 @@ let Flock = Base.extend({
     this.frameSkip = 3;
     //  increase with 1 to make the modulo calculation easier
     this.frameSkip++;
+
+    //
+    //  measure performance
+    //
+    this.measurePerformance = true;
+    this.framesPerMeasurement = 50;
+    this.startTime = 0;
+    this.endTime = 0;
+    this.totalTime = 0;
+    this.performanceCounter = 0;
+
+
   },
 
   addBoid: function(newBoid) {
@@ -27,6 +39,10 @@ let Flock = Base.extend({
   },
 
   run: function() {
+
+    if (this.measurePerformance) {
+      this.startTime = performance.now();
+    }
 
     //  calculate an array with all the squared distances (so not each boid has to do that individually)
     //  skip a defined number of frames
@@ -49,6 +65,25 @@ let Flock = Base.extend({
     }
 
     this.frameCounter++;
+
+    if (this.measurePerformance) {
+      this.endTime = performance.now();
+      this.totalTime += (this.endTime - this.startTime);
+
+      this.performanceCounter++;
+
+      if (this.performanceCounter == this.framesPerMeasurement) {
+        let totalTimeAvailable = this.framesPerMeasurement*1000/60;
+        let efficiency = Math.round((totalTimeAvailable - this.totalTime)/(totalTimeAvailable)*100*100)/100;
+        console.log("Average efficiency over "+this.framesPerMeasurement+" frames: " + efficiency + "%");
+
+        this.performanceCounter = 0;
+        this.totalTime = 0;
+      }
+    }
+
+
+
   },
 
   updateMouse: function(mousePos) {

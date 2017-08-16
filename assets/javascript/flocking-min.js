@@ -226,6 +226,13 @@ let Flock = Base.extend({
     this.frameSkip = 3;
 
     this.frameSkip++;
+
+    this.measurePerformance = !0;
+    this.framesPerMeasurement = 50;
+    this.startTime = 0;
+    this.endTime = 0;
+    this.totalTime = 0;
+    this.performanceCounter = 0;
   },
 
   addBoid: function (newBoid) {
@@ -234,6 +241,11 @@ let Flock = Base.extend({
   },
 
   run: function () {
+
+    if (this.measurePerformance) {
+      this.startTime = performance.now();
+    }
+
     if (this.frameCounter % this.frameSkip == 0) {
       let d = 0;
       for (let i = 0; i < this.l; i++) {
@@ -252,6 +264,23 @@ let Flock = Base.extend({
     }
 
     this.frameCounter++;
+
+    if (this.measurePerformance) {
+      this.endTime = performance.now();
+      this.totalTime += this.endTime - this.startTime;
+
+      this.performanceCounter++;
+
+      if (this.performanceCounter == this.framesPerMeasurement) {
+        let totalTimeAvailable = this.framesPerMeasurement * 1000 / 60,
+            efficiency = Math.round((totalTimeAvailable - this.totalTime) / totalTimeAvailable * 100 * 100) / 100;
+
+        console.log("Average efficiency over " + this.framesPerMeasurement + " frames: " + efficiency + "%");
+
+        this.performanceCounter = 0;
+        this.totalTime = 0;
+      }
+    }
   },
 
   updateMouse: function (mousePos) {
