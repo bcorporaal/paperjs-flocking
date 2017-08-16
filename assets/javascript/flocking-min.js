@@ -223,12 +223,12 @@ let Flock = Base.extend({
     this.distances = [];
     this.frameCounter = 0;
 
-    this.frameSkip = 3;
+    this.frameSkip = 2;
 
     this.frameSkip++;
 
     this.measurePerformance = !0;
-    this.framesPerMeasurement = 50;
+    this.framesPerMeasurement = 100;
     this.startTime = 0;
     this.endTime = 0;
     this.totalTime = 0;
@@ -273,9 +273,9 @@ let Flock = Base.extend({
 
       if (this.performanceCounter == this.framesPerMeasurement) {
         let totalTimeAvailable = this.framesPerMeasurement * 1000 / 60,
-            efficiency = Math.round((totalTimeAvailable - this.totalTime) / totalTimeAvailable * 100 * 100) / 100;
+            efficiency = Math.round((100 - (totalTimeAvailable - this.totalTime) / totalTimeAvailable * 100) * 10) / 10;
 
-        console.log("Average efficiency over " + this.framesPerMeasurement + " frames: " + efficiency + "%");
+        console.log("Average time used over " + this.framesPerMeasurement + " frames: " + efficiency + "%");
 
         this.performanceCounter = 0;
         this.totalTime = 0;
@@ -291,7 +291,7 @@ let Flock = Base.extend({
 
 function startPaper() {
   paper.setup('boid-canvas');
-  const nrBoids = 80;
+  const nrBoids = 30;
 
   flock = new Flock();
 

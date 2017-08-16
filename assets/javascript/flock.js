@@ -16,7 +16,7 @@ let Flock = Base.extend({
     this.frameCounter = 0;
 
     //  number of frames that the distance calculation is skipped
-    this.frameSkip = 3;
+    this.frameSkip = 2;
     //  increase with 1 to make the modulo calculation easier
     this.frameSkip++;
 
@@ -24,7 +24,7 @@ let Flock = Base.extend({
     //  measure performance
     //
     this.measurePerformance = true;
-    this.framesPerMeasurement = 50;
+    this.framesPerMeasurement = 100;
     this.startTime = 0;
     this.endTime = 0;
     this.totalTime = 0;
@@ -74,8 +74,8 @@ let Flock = Base.extend({
 
       if (this.performanceCounter == this.framesPerMeasurement) {
         let totalTimeAvailable = this.framesPerMeasurement*1000/60;
-        let efficiency = Math.round((totalTimeAvailable - this.totalTime)/(totalTimeAvailable)*100*100)/100;
-        console.log("Average efficiency over "+this.framesPerMeasurement+" frames: " + efficiency + "%");
+        let efficiency = Math.round((100 - (totalTimeAvailable - this.totalTime)/(totalTimeAvailable)*100)*10)/10;
+        console.log("Average time used over "+this.framesPerMeasurement+" frames: " + efficiency + "%");
 
         this.performanceCounter = 0;
         this.totalTime = 0;
