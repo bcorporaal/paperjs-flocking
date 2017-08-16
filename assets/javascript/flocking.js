@@ -6,6 +6,9 @@
 //  Include them in the html source in the same order as below.
 
 // @codekit-prepend "core.js";
+
 // @codekit-prepend "boid.js";
+
 // @codekit-prepend "flock.js";
+
 // @codekit-prepend "sketch.js";

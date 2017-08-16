@@ -5,8 +5,8 @@
 //  Rewritten for PaperJS and optimized by Bob Corporaal - https://reefscape.net
 
 function startPaper() {
-  paper.setup('canvas');
-  const nrBoids = 60;
+  paper.setup('boid-canvas');
+  const nrBoids = 30;
 
   // Create a new flock
   flock = new Flock();
