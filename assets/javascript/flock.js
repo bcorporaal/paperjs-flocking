@@ -23,7 +23,7 @@ let Flock = Base.extend({
     //
     //  measure performance
     //
-    this.measurePerformance = true;
+    this.measurePerformance = false;
     this.framesPerMeasurement = 100;
     this.startTime = 0;
     this.endTime = 0;

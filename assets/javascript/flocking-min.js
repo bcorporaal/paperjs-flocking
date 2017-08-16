@@ -227,7 +227,7 @@ let Flock = Base.extend({
 
     this.frameSkip++;
 
-    this.measurePerformance = !0;
+    this.measurePerformance = !1;
     this.framesPerMeasurement = 100;
     this.startTime = 0;
     this.endTime = 0;
