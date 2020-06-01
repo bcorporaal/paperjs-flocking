@@ -33,6 +33,21 @@
 //  IDEA 8
 //  confine to screen instead of wrapping around
 
+//  IDEA 9
+//  convert to p5.js
+
+//  IDEA 10
+//  limit acceleration (probably allowing for collisions)
+
+//  IDEA 11
+//  convert to sketchbook css and navigation
+
+//  IDEA 12
+//  add controls for the parameters
+
+//  IDEA 13
+//  add visual performance monitoring - https://github.com/mrdoob/stats.js
+
 //  INSPIRATION FOR OPTIMIZATION
 //  https://github.com/hughsk/boids
 //  https://github.com/jrhdoty/SwarmJS
@@ -50,7 +65,7 @@ let Boid = Base.extend({
     this.r = 10;
 
     // Maximum speed - original 3
-    this.maxSpeed = this.addNoise(1.7, fnoise);
+    this.maxSpeed = this.addNoise(3, fnoise);
 
     //  Give a random starting velocity based on maxSpeed
     const startVelocity = 0.25;
@@ -63,9 +78,9 @@ let Boid = Base.extend({
     // Maximum steering force - original 0.05
     this.maxForce = this.addNoise(0.04, fnoise);
 
-    // Maximum rotation angle per frame - optional constraint
-    this.maxRotation = 0.05;
-    this.enforceMaximumRotation = false;
+    // Maximum rotation angle per frame - optional constraint - original 0.05
+    this.maxRotation = 0.01;
+    this.enforceMaximumRotation = true;
 
     // Desired separation between boids - original 25.0
     this.desiredSeparation = 30.0; // not random to ensure boids keep some distance
@@ -102,7 +117,7 @@ let Boid = Base.extend({
     //
     //  draw base boid arrow
     //
-    const arrowLength = 7;
+    const arrowLength = 9;
     const arrowSideLength = 7;
 
     let arrowSide = new Point(arrowSideLength, 0);

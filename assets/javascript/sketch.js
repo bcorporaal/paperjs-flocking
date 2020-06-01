@@ -6,7 +6,7 @@
 
 function startPaper() {
   paper.setup('boid-canvas');
-  const nrBoids = 30;
+  const nrBoids = 100;
 
   // Create a new flock
   flock = new Flock();
